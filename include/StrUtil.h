@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
 #include <sstream>
+#include <string>
 
-namespace strutil {
-
-	//typedef std::basic_string<TCHAR, std::char_traits<TCHAR>, std::allocator<TCHAR> >  tstring;
+namespace strutil
+{
+    // typedef std::basic_string<TCHAR, std::char_traits<TCHAR>, std::allocator<TCHAR> >  tstring;
 
     void replace_all(std::string& str, const std::string& from, const std::string& to);
 
@@ -32,8 +32,10 @@ namespace strutil {
     std::string format_r(int pos, std::string format, const T& value, ARGS... args);
 
     // convenience short hand for building a format parameter
-    template <typename... ARGS>
-    std::pair<ARGS...> _p(ARGS... args) { return std::make_pair(std::forward<ARGS>(args)...); };
+    template <typename... ARGS> std::pair<ARGS...> _p(ARGS... args)
+    {
+        return std::make_pair(std::forward<ARGS>(args)...);
+    };
 
     template <typename K, typename T, typename... ARGS>
     std::string format_r(int pos, std::string format, const std::pair<K, T>& value, ARGS... args)

@@ -1,7 +1,7 @@
 #include "StrUtil.h"
 
-namespace strutil {
-
+namespace strutil
+{
     void replace_all(std::string& str, const std::string& from, const std::string& to)
     {
         size_t pos = 0;

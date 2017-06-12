@@ -8,7 +8,7 @@ public:
     CCriticalSection() { InitializeCriticalSection(&mCrit); }
     ~CCriticalSection() { DeleteCriticalSection(&mCrit); }
 
-    CRITICAL_SECTION &Get() { return mCrit; }
+    CRITICAL_SECTION& Get() { return mCrit; }
 
 protected:
     CRITICAL_SECTION mCrit;
@@ -17,7 +17,7 @@ protected:
 class CAutoLock
 {
 public:
-    CAutoLock(CCriticalSection &section)
+    CAutoLock(CCriticalSection& section)
     : mSection(section)
     {
         EnterCriticalSection(&mSection.Get());
@@ -25,5 +25,5 @@ public:
     ~CAutoLock() { LeaveCriticalSection(&mSection.Get()); }
 
 private:
-    CCriticalSection &mSection;
+    CCriticalSection& mSection;
 };
