@@ -6,19 +6,19 @@
 #include <memory>
 #endif // _WIN32
 
-// 
+//
 // signal-slot pattern implementation.
 //
 // Callbacks registered to the event are deregistered when
 // the eventconnection handle is destructed.
-// 
+//
 
 class EventConnection {
 
 public:
 	EventConnection() = default;
 
-	// ensure that the connection can not be duplicated. 
+	// ensure that the connection can not be duplicated.
 	EventConnection(const EventConnection &evlc) = delete;
 	void operator=(const EventConnection &evlc) = delete;
 
@@ -65,7 +65,7 @@ public:
 	~Event()
 	{
 		// mark all the records disconnected
-		for (const CallbackRecord& tuple : mListeners) {			
+		for (const CallbackRecord& tuple : mListeners) {
 			if (auto er = std::get<0>(tuple).lock()) {
 				// this happens only if this event is destroyed before the eventconnection
 				er->connected = false;
@@ -83,14 +83,14 @@ public:
 		}
 		return EventConnection(er);
 	}
-	
+
 	void operator()(T&&... args)
 	{
-		Raise(std::forward<T...>(args));
+		Raise(std::forward<T...>(args...));
 	}
 
 	void Raise(T&&... args)
-	{		
+	{
 		// call listeners while purging expired ones
 		auto it = mListeners.begin();
 		while (it != mListeners.end()) {
@@ -100,7 +100,7 @@ public:
 				it++;
 			} else {
 				it = mListeners.erase(it);
-			}			
+			}
 		}
 	}
 protected:
