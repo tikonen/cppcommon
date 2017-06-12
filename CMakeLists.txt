@@ -42,7 +42,7 @@ else()
 	set(TESTING TRUE)
 endif()
 
-if(!TESTING)
+if(NOT TESTING)
 	return()
 endif()
 
