@@ -5,6 +5,8 @@
 
 namespace strutil {
 
+	//typedef std::basic_string<TCHAR, std::char_traits<TCHAR>, std::allocator<TCHAR> >  tstring;
+
     void replace_all(std::string& str, const std::string& from, const std::string& to);
 
     // Convert to a string

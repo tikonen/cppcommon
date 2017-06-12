@@ -4,6 +4,6 @@
 
 #include <windows.h>
 
-void DebugMsg(LPTSTR szFormat, ...);
+void DebugMsg(PCTSTR szFormat, ...);
 
 #endif

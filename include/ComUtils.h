@@ -3,6 +3,14 @@
 #include <windows.h>
 #include <strsafe.h>
 
+template <class T> void SafeRelease(T **ppT)
+{
+	if (*ppT) {
+		(*ppT)->Release();
+		*ppT = NULL;
+	}
+}
+
 // Return the name of the COM DLL associated with a given CLSID string.
 // The CLSID string must be in canonical form.
 inline HRESULT GetFilenameByCLSIDString(const WCHAR *szGUID, WCHAR *szFile, size_t cch)

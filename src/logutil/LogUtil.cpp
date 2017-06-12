@@ -1,30 +1,24 @@
 #ifdef _WIN32
 
-#include <streams.h>
 #include <strsafe.h>
 
 #include "LogUtil.h"
 
-
-void DebugMsg(LPTSTR szFormat, ...)
+void DebugMsg(PCTSTR szFormat, ...)
 {
-	static TCHAR szBuffer[2048] = { 0 };
-	const size_t NUMCHARS = sizeof(szBuffer) / sizeof(szBuffer[0]);
-	const int LASTCHAR = NUMCHARS - 1;
+	va_list args;
+	va_start(args, szFormat);
 
-	// Format the input string
-	va_list pArgs;
-	va_start(pArgs, szFormat);
+	TCHAR msg[2048];
 
-	// Use a bounded buffer size to prevent buffer overruns.  Limit count to
-	// character size minus one to allow for a NULL terminating character.
-	HRESULT hr = StringCchVPrintf(szBuffer, NUMCHARS - 1, szFormat, pArgs);
-	va_end(pArgs);
+	HRESULT hr = StringCbVPrintf(msg, sizeof(msg), szFormat, args);
+	va_end(args);
 
 	// Ensure that the formatted string is NULL-terminated
-	szBuffer[LASTCHAR] = TEXT('\0');
-	OutputDebugString(szBuffer);
-	OutputDebugString(TEXT("\r\n"));
+	msg[sizeof(msg) / sizeof(TCHAR) - 1] = TEXT('\0');
+
+	OutputDebugString(msg);
+
 	/*
 	MessageBox(ghwndApp, szBuffer, NULL,
 	MB_OK | MB_ICONEXCLAMATION | MB_TASKMODAL);
