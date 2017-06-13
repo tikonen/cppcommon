@@ -50,51 +50,50 @@ else()
 	set(TESTING TRUE)
 endif()
 
-if(NOT TESTING)
-	return()
-endif()
-
 ###
 ### Unit testing
 ###
 
-find_package(GTest)
+if(TESTING)
 
-if(GTEST_FOUND)
-	# always link with absolute path, even implicit directories. avoids problems with
-	# running targets on IDE when dll's are not in the environment search path.
-	cmake_policy(SET CMP0060 NEW)
+	find_package(GTest)
 
-	enable_testing()
+	if(GTEST_FOUND)
+		# always link with absolute path, even implicit directories. avoids problems with
+		# running targets on IDE when dll's are not in the environment search path.
+		cmake_policy(SET CMP0060 NEW)
 
-	set(_test_runner_target "testRunner")
+		enable_testing()
 
-    file(
-        GLOB _test_source_list
-        LIST_DIRECTORIES false
-        "${PROJECT_SOURCE_DIR}/tests/test_*.cpp"
-    )
+		set(_test_runner_target "testRunner")
 
-	add_executable(${_test_runner_target} ${_test_source_list})
+		file(
+			GLOB _test_source_list
+			LIST_DIRECTORIES false
+			"${PROJECT_SOURCE_DIR}/tests/test_*.cpp"
+		)
 
-	target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
-	target_link_libraries(${_test_runner_target} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${_target})
+		add_executable(${_test_runner_target} ${_test_source_list})
 
-	add_test(
-		NAME EventListener
-		COMMAND ${_test_runner_target} "--gtest_filter" "EventListener.*"
-	)
-    add_test(
-        NAME StringUtil
-        COMMAND ${_test_runner_target} "--gtest_filter" "StringUtil.*"
-    )
-    add_test(
-        NAME CSVReader
-        COMMAND ${_test_runner_target} "--gtest_filter" "CSVReader.*"
-    )
+		target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
+		target_link_libraries(${_test_runner_target} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${_target})
 
-else()
-	message("Tests disabled. To enable set GTEST_ROOT to the GTest installation location")
-endif(GTEST_FOUND)
+		add_test(
+			NAME EventListener
+			COMMAND ${_test_runner_target} "--gtest_filter" "EventListener.*"
+		)
+		add_test(
+			NAME StringUtil
+			COMMAND ${_test_runner_target} "--gtest_filter" "StringUtil.*"
+		)
+		add_test(
+			NAME CSVReader
+			COMMAND ${_test_runner_target} "--gtest_filter" "CSVReader.*"
+		)
+
+	else()
+		message("Tests disabled. To enable set GTEST_ROOT to the GTest installation location")
+	endif(GTEST_FOUND)
+endif(TESTING)
 
 configure_file(${PROJECT_SOURCE_DIR}/CppCommonConfig.h.in ${PROJECT_BINARY_DIR}/exports/CppCommonConfig.h)
