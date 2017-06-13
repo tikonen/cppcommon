@@ -18,6 +18,7 @@ void DebugMsg(PCTSTR szFormat, ...)
     msg[sizeof(msg) / sizeof(TCHAR) - 1] = TEXT('\0');
 
     OutputDebugString(msg);
+    OutputDebugStringA("\n");
 
     /*
     MessageBox(ghwndApp, szBuffer, NULL,

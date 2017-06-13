@@ -83,6 +83,23 @@ public:
     }
 
     // Assignment
+    SmartPtr& operator=(T* ptr)
+    {
+        // Don't do anything if we are assigned to ourselves.
+        if (!AreComObjectsEqual(m_ptr, ptr)) {
+            if (m_ptr) {
+                m_ptr->Release();
+            }
+
+            m_ptr = ptr;
+            if (m_ptr) {
+                m_ptr->AddRef();
+            }
+        }
+
+        return *this;
+    }
+
     SmartPtr& operator=(const SmartPtr& sptr)
     {
         // Don't do anything if we are assigned to ourselves.
