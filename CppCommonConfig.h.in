@@ -1,0 +1,4 @@
+#pragma once
+
+#define HAS_BOOST ${Boost_FOUND}
+#define HAS_GTEST ${GTEST_FOUND}

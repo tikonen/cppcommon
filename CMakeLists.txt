@@ -28,10 +28,18 @@ set(_target "common")
 
 add_library(${_target} STATIC ${_source_list} ${_include_list})
 
-target_include_directories(${_target} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${_target} PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/exports/)
 
 if(OSX)
     set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+endif()
+
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost COMPONENTS regex)
+
+if(Boost_FOUND)
+    target_include_directories(${_target} PUBLIC ${Boost_INCLUDE_DIRS})
+    target_link_libraries(${_target} ${Boost_LIBRARIES})
 endif()
 
 get_directory_property(hasParent PARENT_DIRECTORY)
@@ -61,12 +69,15 @@ if(GTEST_FOUND)
 
 	set(_test_runner_target "testRunner")
 
-	add_executable(${_test_runner_target}
-		"${PROJECT_SOURCE_DIR}/tests/test_events.cpp"
-        "${PROJECT_SOURCE_DIR}/tests/test_strutil.cpp"
-	)
+    file(
+        GLOB _test_source_list
+        LIST_DIRECTORIES false
+        "${PROJECT_SOURCE_DIR}/tests/test_*.cpp"
+    )
 
-	target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS})
+	add_executable(${_test_runner_target} ${_test_source_list})
+
+	target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
 	target_link_libraries(${_test_runner_target} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${_target})
 
 	add_test(
@@ -77,6 +88,13 @@ if(GTEST_FOUND)
         NAME StringUtil
         COMMAND ${_test_runner_target} "--gtest_filter" "StringUtil.*"
     )
+    add_test(
+        NAME CSVReader
+        COMMAND ${_test_runner_target} "--gtest_filter" "CSVReader.*"
+    )
+
 else()
-	message("Set GTEST_ROOT to point to the GTest installation location")
+	message("Tests disabled. To enable set GTEST_ROOT to the GTest installation location")
 endif(GTEST_FOUND)
+
+configure_file(${PROJECT_SOURCE_DIR}/CppCommonConfig.h.in ${PROJECT_BINARY_DIR}/exports/CppCommonConfig.h)
