@@ -4,6 +4,17 @@
 
 #pragma once
 
+#include <vector>
+
+
+template <class T> void SafeRelease(T** ppT)
+{
+    if (*ppT) {
+        (*ppT)->Release();
+        *ppT = NULL;
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////
 // Name: AreCOMObjectsEqual [template]
 // Desc: Tests two COM pointers for equality.
@@ -33,23 +44,25 @@ template <class T1, class T2> bool AreComObjectsEqual(T1* p1, T2* p2)
     return bResult;
 }
 
-// _NoAddRefOrRelease:
-// This is a version of our COM interface that dis-allows AddRef
-// and Release. All ref-counting should be done by the SmartPtr
-// object, so we want to dis-allow calling AddRef or Release
-// directly. The operator-> returns a _NoAddRefOrRelease pointer
-// instead of returning the raw COM pointer. (This behavior is the
-// same as ATL's CComPtr class.)
-template <class T> class _NoAddRefOrRelease : public T
-{
-private:
-    STDMETHOD_(ULONG, AddRef)() = 0;
-    STDMETHOD_(ULONG, Release)() = 0;
-};
-
 template <class T> class SmartPtr
 {
+    static_assert(std::is_base_of<IUnknown, T>::value, "T must inherit IUnknown");
+
 public:
+    // _NoAddRefOrRelease:
+    // This is a version of our COM interface that dis-allows AddRef
+    // and Release. All ref-counting should be done by the SmartPtr
+    // object, so we want to dis-allow calling AddRef or Release
+    // directly. The operator-> returns a _NoAddRefOrRelease pointer
+    // instead of returning the raw COM pointer. (This behavior is the
+    // same as ATL's CComPtr class.)
+    template <class T> class _NoAddRefOrRelease : public T
+    {
+    private:
+        STDMETHOD_(ULONG, AddRef)() = 0;
+        STDMETHOD_(ULONG, Release)() = 0;
+    };
+
     // Ctor
     SmartPtr()
     : m_ptr(NULL)
@@ -172,4 +185,29 @@ public:
 
 private:
     T* m_ptr;
+};
+
+// converts raw com object array to a SmartPtr managed vector
+template <class T> class SmartPtrArray : public std::vector<SmartPtr<T>>
+{
+public:
+    SmartPtrArray() = default;
+    SmartPtrArray(T*** ppArr, size_t count) { Transfer(ppArr, count); }
+
+    // Transfer ownership of the objects
+    void Transfer(T*** ppArr, size_t count)
+    {
+        clear();
+
+        if (*ppArr) {
+
+            for (size_t i = 0; i < count; i++) {
+                emplace_back(*ppArr[i]);
+                SafeRelease(&*ppArr[i]);
+            }
+
+            CoTaskMemFree(*ppArr);
+            *ppArr = NULL;
+        }
+    }
 };
