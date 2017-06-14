@@ -18,7 +18,7 @@ namespace
 
 namespace CSV
 {
-    std::vector<Row> Parse(const char* data, unsigned int length)
+    std::vector<Row> Parse(const char* data, size_t length)
     {
         std::vector<Row> result;
 
