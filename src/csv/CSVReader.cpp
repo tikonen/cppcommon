@@ -7,14 +7,11 @@
 
 #include <CSVReader.h>
 
-namespace
-{
-    // used to split the file in lines
-    const boost::regex linesregx("\\r\\n|\\n\\r|\\n|\\r");
+// used to split the file in lines
+const boost::regex linesregx("\\r\\n|\\n\\r|\\n|\\r");
 
-    // used to split each line to tokens, assuming ',' as column separator
-    const boost::regex fieldsregx(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-}
+// used to split each line to tokens, assuming ',' as column separator
+const boost::regex fieldsregx(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
 
 namespace CSV
 {
