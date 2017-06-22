@@ -198,15 +198,15 @@ public:
     void Transfer(T*** ppArr, size_t count)
     {
         clear();
-
-        if (*ppArr) {
+        T** pArr = *ppArr;
+        if (pArr) {
 
             for (size_t i = 0; i < count; i++) {
-                emplace_back(*ppArr[i]);
-                SafeRelease(&*ppArr[i]);
+                emplace_back(pArr[i]);
+                SafeRelease(&pArr[i]);
             }
 
-            CoTaskMemFree(*ppArr);
+            CoTaskMemFree(pArr);
             *ppArr = NULL;
         }
     }
