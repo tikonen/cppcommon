@@ -38,7 +38,7 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS regex)
 
 if(Boost_FOUND)
-    target_include_directories(${_target} PUBLIC ${Boost_INCLUDE_DIRS})
+    target_include_directories(${_target} PUBLIC ${Boost_INCLUDE_DIR})
     target_link_libraries(${_target} ${Boost_LIBRARIES})
 endif()
 

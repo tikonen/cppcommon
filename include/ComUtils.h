@@ -3,6 +3,47 @@
 #include <strsafe.h>
 #include <windows.h>
 
+template <class T> void SafeRelease(T** ppT)
+{
+    if (*ppT) {
+        (*ppT)->Release();
+        *ppT = NULL;
+    }
+}
+
+// Helpers for binding a single object as an array-of-one to a DX function that requires an array
+// This is only suitable for input arrays, not output parameters
+template <typename Type> struct InputArrayBinding;
+template <typename Type> InputArrayBinding<Type> BindInputArray(const Type object)
+{
+    return InputArrayBinding<Type>{ object };
+}
+template <typename Type> InputArrayBinding<Type*> BindInputArray(const CComPtr<Type>& object)
+{
+    return BindInputArray<Type*>(object);
+}
+
+// Implementation BindInputArray
+template <typename Type> struct InputArrayBinding {
+    InputArrayBinding(const Type o)
+    : obj(o)
+    {
+    }
+    InputArrayBinding(const InputArrayBinding&) = delete;
+    InputArrayBinding(InputArrayBinding&& o)
+    : obj(o.obj)
+    {
+    }
+    operator const Type*() &&
+    {
+        return ptr;
+    } // && forces this to only be used with rvalues/temporaries
+private:
+    const Type obj;
+    const Type* ptr = &obj;
+};
+
+
 // Return the name of the COM DLL associated with a given CLSID string.
 // The CLSID string must be in canonical form.
 inline HRESULT GetFilenameByCLSIDString(const WCHAR* szGUID, WCHAR* szFile, size_t cch)

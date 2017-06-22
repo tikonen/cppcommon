@@ -26,4 +26,38 @@ void DebugMsg(PCTSTR szFormat, ...)
     */
 }
 
+LPCSTR GetErrorString(const DWORD error)
+{
+    static CHAR buffer[MAX_PATH];
+
+    // Call FormatMessage to get error string from winapi
+    LPWSTR _buffer = nullptr;
+    DWORD size =
+    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   nullptr, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&_buffer, 0, nullptr);
+
+    if (size > 0) {
+        char* descbuffer = new char[size * 2];
+        size_t convertCount;
+        wcstombs_s(&convertCount, descbuffer, size * 2, _buffer, size);
+        snprintf(buffer, sizeof(buffer), "%x : %s", error, descbuffer);
+    } else {
+        snprintf(buffer, sizeof(buffer), "%x", error);
+    }
+    LocalFree(_buffer);
+    return buffer;
+}
+
+
+LPCSTR HResultToString(const HRESULT result)
+{
+    // Handle success case
+    if (!FAILED(result))
+        return "Success";
+
+    // Pass error through standard windows TranslateMessage
+    const HRESULT code = result & 0xffff; // Error code is the lower word of the HRESULT
+    return GetErrorString((DWORD)code);   // Call other helper to convert win32 error to string
+}
+
 #endif
