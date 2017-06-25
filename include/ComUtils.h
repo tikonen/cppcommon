@@ -1,15 +1,8 @@
 #pragma once
 
+#include <atlbase.h>
 #include <strsafe.h>
 #include <windows.h>
-
-template <class T> void SafeRelease(T** ppT)
-{
-    if (*ppT) {
-        (*ppT)->Release();
-        *ppT = NULL;
-    }
-}
 
 // Helpers for binding a single object as an array-of-one to a DX function that requires an array
 // This is only suitable for input arrays, not output parameters
@@ -23,21 +16,30 @@ template <typename Type> InputArrayBinding<Type*> BindInputArray(const CComPtr<T
     return BindInputArray<Type*>(object);
 }
 
+template <typename T> class SmartPtr;
+
+template <typename Type> InputArrayBinding<Type*> BindInputArray(const SmartPtr<Type>& object)
+{
+    return BindInputArray<Type*>(object);
+}
+
+
 // Implementation BindInputArray
 template <typename Type> struct InputArrayBinding {
     InputArrayBinding(const Type o)
     : obj(o)
     {
     }
+
     InputArrayBinding(const InputArrayBinding&) = delete;
     InputArrayBinding(InputArrayBinding&& o)
     : obj(o.obj)
     {
     }
-    operator const Type*() &&
-    {
-        return ptr;
-    } // && forces this to only be used with rvalues/temporaries
+
+    // && forces this to only be used with rvalues/temporaries
+    operator const Type*() && { return ptr; }
+
 private:
     const Type obj;
     const Type* ptr = &obj;

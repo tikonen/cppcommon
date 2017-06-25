@@ -6,7 +6,6 @@
 
 #include <vector>
 
-
 template <class T> void SafeRelease(T** ppT)
 {
     if (*ppT) {
@@ -192,10 +191,10 @@ template <class T> class SmartPtrArray : public std::vector<SmartPtr<T>>
 {
 public:
     SmartPtrArray() = default;
-    SmartPtrArray(T*** ppArr, size_t count) { Transfer(ppArr, count); }
+    SmartPtrArray(T*** ppArr, size_t count) { Move(ppArr, count); }
 
-    // Transfer ownership of the objects
-    void Transfer(T*** ppArr, size_t count)
+    // Move ownership of the objects
+    void Move(T*** ppArr, size_t count)
     {
         clear();
         T** pArr = *ppArr;
@@ -203,7 +202,7 @@ public:
 
             for (size_t i = 0; i < count; i++) {
                 emplace_back(pArr[i]);
-                SafeRelease(&pArr[i]);
+                SafeRelease(&(pArr[i]));
             }
 
             CoTaskMemFree(pArr);
