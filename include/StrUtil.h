@@ -58,4 +58,8 @@ namespace strutil
     {
         return format_r(0, format, value, std::forward<ARGS>(args)...);
     }
+
+    // Conversions between UTF-8 and UTF-16
+    std::string to_utf8(const std::wstring& str);
+    std::wstring to_utf16(const std::string& str);
 }

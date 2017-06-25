@@ -1,3 +1,6 @@
+#include <codecvt>
+#include <locale>
+
 #include "StrUtil.h"
 
 namespace strutil
@@ -10,4 +13,10 @@ namespace strutil
             pos += to.length();
         }
     }
+
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> utf8converter;
+
+    std::string to_utf8(const std::wstring& str) { return utf8converter.to_bytes(str); }
+
+    std::wstring to_utf16(const std::string& str) { return utf8converter.from_bytes(str); }
 }
