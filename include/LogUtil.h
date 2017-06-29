@@ -6,6 +6,7 @@
 
 // Returns a string representing the result, with additional details if possible
 LPCSTR HResultToString(HRESULT result);
+LPCSTR GetLastErrorString();
 
 void DebugMsg(PCTSTR szFormat, ...);
 

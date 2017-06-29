@@ -48,6 +48,7 @@ LPCSTR GetErrorString(const DWORD error)
     return buffer;
 }
 
+LPCSTR GetLastErrorString() { return GetErrorString(GetLastError()); }
 
 LPCSTR HResultToString(const HRESULT result)
 {

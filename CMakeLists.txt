@@ -78,18 +78,16 @@ if(TESTING)
 		target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
 		target_link_libraries(${_test_runner_target} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${_target})
 
-		add_test(
-			NAME EventListener
-			COMMAND ${_test_runner_target} "--gtest_filter" "EventListener.*"
-		)
-		add_test(
-			NAME StringUtil
-			COMMAND ${_test_runner_target} "--gtest_filter" "StringUtil.*"
-		)
-		add_test(
-			NAME CSVReader
-			COMMAND ${_test_runner_target} "--gtest_filter" "CSVReader.*"
-		)
+    macro(add_gtest _test)
+      add_test(
+  			NAME ${_test}
+  			COMMAND ${_test_runner_target} "--gtest_filter" "${_test}.*"
+  		)
+    endmacro(add_gtest)
+
+    add_gtest(EventListener)
+    add_gtest(StringUtil)
+    add_gtest(CSVReader)
 
 	else()
 		message("Tests disabled. To enable set GTEST_ROOT to the GTest installation location")
