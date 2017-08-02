@@ -1,7 +1,8 @@
 #pragma once
 
-#include <list>
+#include <vector>
 #include <intrin.h>
+#include <stdexcept>
 
 class BinaryPacker {
 public:
@@ -9,6 +10,11 @@ public:
 		LITTLE_ENDIAN,
 		BIG_ENDIAN
 	};
+
+	BinaryPacker(DWORD size = 128)
+	{
+		mData.reserve(size);
+	}
 
 	template<typename T>
 	BinaryPacker& add16bWord(T b, Endianess end)
@@ -25,143 +31,94 @@ public:
 	template<typename T>
 	BinaryPacker& addByte(T b)
 	{
-		return add((BYTE)b);
+		return add((BYTE)b, Endianess::LITTLE_ENDIAN);
 	}
 
 	BinaryPacker& add(const BYTE * pData, DWORD dwLen)
 	{
-		Append(Unit(dwLen, pData));
+		mData.insert(mData.end(), pData, pData + dwLen);
 		return *this;
 	}
 
 	BinaryPacker& skip(DWORD dwLen)
 	{
-		return add(nullptr, dwLen);
+		return set(dwLen, 0x00);
 	}
 
 	BinaryPacker& set(DWORD dwLen, BYTE b)
 	{
-		skip(dwLen);
-		// store the fill byte value
-		mData.back().Data.sData = 0x00FF | (b << 8);
+		mData.resize(mData.size() + dwLen, b);
 		return *this;
 	}
 
 	void CopyTo(BYTE *pDst, DWORD &dwLen)
 	{
-		DWORD dLen = 0;
-		for (auto it = mData.cbegin(); it != mData.end(); it++) {
-			auto& unit = *it;
-			if (dLen + unit.len > dwLen) {
-				break;
-			}
-			if (unit.pData) {
-				memcpy(pDst + dLen, unit.pData, unit.len);
-			} else {
-				// skip
-				if (unit.Data.sData & 0xFF) {
-					// fill with a byte value
-					BYTE b = (unit.Data.sData >> 8) & 0xFF;
-					memset(pDst + dLen, b, unit.len);
-				}
-			}
-			dLen += unit.len;
-		}
-		dwLen = dLen;
+		dwLen = min(dwLen, mData.size());
+		memcpy(pDst, mData.data(), dwLen);
 	}
 
 	DWORD GetLength()
 	{
-		return mOffset;
+		return mData.size();
 	}
 protected:
+	union Data {
+		BYTE bData;
+		DWORD dwData;
+		WORD wData;
+		LONG64 qwData;
+	};
 
-	struct Unit {
-		DWORD len = 0;
-		const BYTE * pData = (BYTE*)&Data;
-		union {
-			BYTE bData;
-			DWORD dwData;
-			SHORT sData;
-		} Data{};
+	template <int>
+	struct int_functor;
 
-		Unit(const Unit& evlc) = delete;
-		void operator=(const Unit& evlc) = delete;
-
-		void Assign(Unit &u)
+	template <>
+	struct int_functor<1>
+	{
+		void operator()(BYTE b, Data *d, Endianess) const
 		{
-			len = u.len;
-			pData = u.pData;
-			if (u.pData && len <= 4) {
-				pData = (BYTE*)&Data;
-				Data = u.Data;
-			}
-		}
-
-		Unit(Unit&& u)
-		{
-			Assign(u);
-		}
-		Unit& operator=(Unit&& u)
-		{
-			Assign(u);
-		}
-
-		Unit(DWORD l, const BYTE * data)
-		{
-			len = l;
-			pData = NULL;
-			if (data) {
-				if (len <= 4) {
-					pData = (BYTE*)&Data;
-					memcpy(&Data, data, len);
-				} else {
-					pData = data;
-					Data.dwData = 0;
-				}
-			}
-		}
-
-		Unit(BYTE b)
-		{
-			len = 1;
-			Data.bData = b;
-		}
-
-		Unit(DWORD w, Endianess end)
-		{
-			len = sizeof(w);
-			Data.dwData = end == LITTLE_ENDIAN ? w : _byteswap_ulong(w);
-		}
-
-		Unit(WORD s, Endianess end)
-		{
-			len = sizeof(s);
-			Data.sData = end == LITTLE_ENDIAN ? s : _byteswap_ushort(s);
+			d->bData = b;
 		}
 	};
 
-	template <typename T>
-	BinaryPacker &add(T u)
+	template <>
+	struct int_functor<2>
 	{
-		Append(Unit(u));
+		void operator()(WORD w, Data *d, Endianess end) const
+		{
+			d->wData = end == LITTLE_ENDIAN ? w : _byteswap_ushort(w);
+		}
+	};
+
+	template <>
+	struct int_functor<4>
+	{
+		void operator()(DWORD dw, Data *d, Endianess end) const
+		{
+			d->dwData = end == LITTLE_ENDIAN ? dw : _byteswap_ulong(dw);
+		}
+	};
+
+	template <>
+	struct int_functor<8>
+	{
+		void operator()(LONG64 qw, Data *d, Endianess end) const
+		{
+			d->qwData = end == LITTLE_ENDIAN ? qw : _byteswap_uint64(qw);
+		}
+	};
+
+	template <class T>
+	BinaryPacker &add(T w, Endianess end)
+	{
+		Data d{};
+		// pick correct conversion based on the size of T
+		int_functor<sizeof(T)>()(w, &d, end);
+		mData.insert(mData.end(), (BYTE*)&d, (BYTE*)&d + sizeof(T));
 		return *this;
-	};
-
-	template <typename T>
-	BinaryPacker &add(T u, Endianess end)
-	{
-		Append(Unit(u, end));
-		return *this;
-	};
-
-	void Append(Unit &&unit)
-	{
-		mData.push_back(std::move(unit));
-		mOffset += unit.len;
 	}
 
+	
 private:
-	std::list<Unit> mData;
-	DWORD mOffset = 0;
+	std::vector<BYTE> mData;
 };
