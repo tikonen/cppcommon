@@ -52,9 +52,9 @@ TEST(BinaryPacker, WordEndianess)
 {
     BinaryPacker pack;
     pack.add16bWord(0xABCD, LITTLE_ENDIAN)
-    .add16bWord(0xABCD, BIG_ENDIAN)
-    .add32bWord(0xCAFEBABE, LITTLE_ENDIAN)
-    .add32bWord(0xCAFEBABE, BIG_ENDIAN);
+        .add16bWord(0xABCD, BIG_ENDIAN)
+        .add32bWord(0xCAFEBABE, LITTLE_ENDIAN)
+        .add32bWord(0xCAFEBABE, BIG_ENDIAN);
     ASSERT_EQ(sizeof(WORD) * 2 + sizeof(DWORD) * 2, pack.GetLength());
     BYTE data[128];
     BYTE* ptr = data;
@@ -73,9 +73,9 @@ TEST(BinaryPacker, WordEndianess)
     WORD w1, w2;
     DWORD dw1, dw2;
     unpack.read16bWord(&w1, LITTLE_ENDIAN)
-    .read16bWord(&w2, BIG_ENDIAN)
-    .read32bWord(&dw1, LITTLE_ENDIAN)
-    .read32bWord(&dw2, BIG_ENDIAN);
+        .read16bWord(&w2, BIG_ENDIAN)
+        .read32bWord(&dw1, LITTLE_ENDIAN)
+        .read32bWord(&dw2, BIG_ENDIAN);
 
     ASSERT_EQ(0xABCD, w1);
     ASSERT_EQ(0xABCD, w2);
