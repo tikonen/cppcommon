@@ -88,6 +88,7 @@ if(TESTING)
     add_gtest(EventListener)
     add_gtest(StringUtil)
     add_gtest(CSVReader)
+    add_gtest(BinaryPacker)
 
 	else()
 		message("Tests disabled. To enable set GTEST_ROOT to the GTest installation location")

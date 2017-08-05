@@ -30,7 +30,7 @@ TEST(StringUtil, Format)
 TEST(StringUtil, Utf8)
 {
     ASSERT_EQ("a", to_utf8(L"a"));
-    ASSERT_EQ("\xc3\xa4", to_utf8(L"ä")); // unicode ä 0x00E4 -> utf8 ä 0xC3A4)
+    ASSERT_EQ("\xc3\xa4", to_utf8(L"Ã¤")); // unicode Ã¤ 0x00E4 -> utf8 Ã¤ 0xC3A4)
     ASSERT_EQ(L"a", to_utf16("a"));
-    ASSERT_EQ(L"ä", to_utf16("\xc3\xa4")); // utf8 (ucs2) ä -> unicode ä
+    ASSERT_EQ(L"Ã¤", to_utf16("\xc3\xa4")); // utf8 (ucs2) Ã¤ -> unicode Ã¤
 }
