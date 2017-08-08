@@ -2,6 +2,7 @@
 
 #include "_BinaryPackerInternal.h"
 
+#include <algorithm>
 #include <vector>
 
 class BinaryPacker
@@ -32,13 +33,13 @@ public:
         return *this;
     }
 
-    void CopyTo(BYTE* pDst, int& dwLen)
+    void CopyTo(BYTE* pDst, size_t& dwLen)
     {
-        dwLen = std::min(static_cast<size_t>(dwLen), mData.size());
+        dwLen = (std::min)(static_cast<size_t>(dwLen), mData.size());
         memcpy(pDst, mData.data(), dwLen);
     }
 
-    int GetLength() { return mData.size(); }
+    size_t GetLength() { return mData.size(); }
 
 protected:
     // make sure that this function is used only for integral types

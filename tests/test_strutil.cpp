@@ -1,3 +1,4 @@
+// this file must be saved as utf-8
 
 #include <gtest/gtest.h>
 

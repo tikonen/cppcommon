@@ -9,7 +9,7 @@
 class BinaryUnPacker
 {
 public:
-    BinaryUnPacker(BYTE* pData, DWORD dwLength)
+    BinaryUnPacker(BYTE* pData, size_t dwLength)
     {
         mpData = pData;
         mLength = dwLength;
@@ -47,9 +47,9 @@ public:
         return *this;
     }
 
-    DWORD GetLength() { return mLength; }
+    size_t GetLength() { return mLength; }
 
-    DWORD GetOffset() { return mOffset; }
+    size_t GetOffset() { return mOffset; }
 
 protected:
     bool ensure(DWORD len)
@@ -74,6 +74,6 @@ protected:
 
 private:
     BYTE* mpData = nullptr;
-    DWORD mLength = 0;
-    DWORD mOffset = 0;
+    size_t mLength = 0;
+    size_t mOffset = 0;
 };

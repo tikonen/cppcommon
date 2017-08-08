@@ -1,8 +1,11 @@
 
 #include <gtest/gtest.h>
 
+#include <Windows.h>
+
 #include <BinaryPacker.h>
 #include <BinaryUnPacker.h>
+
 
 TEST(BinaryPacker, Zero)
 {
@@ -18,7 +21,7 @@ TEST(BinaryPacker, Packet)
 
     ASSERT_EQ(4, pack.GetLength());
     BYTE data[128];
-    int l = sizeof(data);
+    size_t l = sizeof(data);
     pack.CopyTo(data, l);
     BYTE p[] = { 0x1, 0x0, 0x0, 0x3 };
     ASSERT_FALSE(memcmp(data, p, l));
@@ -38,7 +41,7 @@ TEST(BinaryPacker, Array)
     pack.add((BYTE*)"kissa", 6);
     ASSERT_EQ(6, pack.GetLength());
     BYTE data[128];
-    int l = sizeof(data);
+    size_t l = sizeof(data);
     pack.CopyTo(data, l);
     ASSERT_STREQ("kissa", (char*)data);
 
@@ -58,7 +61,7 @@ TEST(BinaryPacker, WordEndianess)
     ASSERT_EQ(sizeof(WORD) * 2 + sizeof(DWORD) * 2, pack.GetLength());
     BYTE data[128];
     BYTE* ptr = data;
-    int l = sizeof(data);
+    size_t l = sizeof(data);
     pack.CopyTo(data, l);
 
     ASSERT_EQ(0xABCD, *(WORD*)ptr);

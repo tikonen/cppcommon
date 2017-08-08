@@ -73,6 +73,9 @@ if(TESTING)
 			"${PROJECT_SOURCE_DIR}/tests/test_*.cpp"
 		)
 
+		set_source_files_properties(${_test_source_list}
+			PROPERTIES COMPILE_FLAGS "/utf-8")
+
 		add_executable(${_test_runner_target} ${_test_source_list})
 
 		target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
