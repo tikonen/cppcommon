@@ -72,10 +72,10 @@ if(TESTING)
 			LIST_DIRECTORIES false
 			"${PROJECT_SOURCE_DIR}/tests/test_*.cpp"
 		)
-
-		set_source_files_properties(${_test_source_list}
-			PROPERTIES COMPILE_FLAGS "/utf-8")
-
+        if(WIN32)
+		          set_source_files_properties(${_test_source_list}
+			               PROPERTIES COMPILE_FLAGS "/utf-8")
+        endif()
 		add_executable(${_test_runner_target} ${_test_source_list})
 
 		target_include_directories(${_test_runner_target} PRIVATE ${GTEST_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/exports/)
@@ -84,7 +84,7 @@ if(TESTING)
     macro(add_gtest _test)
       add_test(
   			NAME ${_test}
-  			COMMAND ${_test_runner_target} "--gtest_filter" "${_test}.*"
+  			COMMAND ${_test_runner_target} "--gtest_filter=${_test}.*"
   		)
     endmacro(add_gtest)
 
