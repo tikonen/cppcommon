@@ -1,7 +1,9 @@
 
 #include <gtest/gtest.h>
 
+#ifdef WIN32
 #include <Windows.h>
+#endif
 
 #include <BinaryPacker.h>
 #include <BinaryUnPacker.h>
