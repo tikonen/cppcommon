@@ -56,9 +56,7 @@ LPCSTR HResultToString(const HRESULT result)
     if (!FAILED(result))
         return "Success";
 
-    // Pass error through standard windows TranslateMessage
-    const HRESULT code = result & 0xffff; // Error code is the lower word of the HRESULT
-    return GetErrorString((DWORD)code);   // Call other helper to convert win32 error to string
+    return GetErrorString(result); // Call other helper to convert win32 error to string
 }
 
 #endif
