@@ -87,3 +87,16 @@ TEST(BinaryPacker, WordEndianess)
     ASSERT_EQ(0xCAFEBABE, dw1);
     ASSERT_EQ(0xCAFEBABE, dw2);
 }
+
+TEST(BinaryPacker, Invalid)
+{
+    BinaryUnPacker unpack(NULL, 0);
+    BOOL fCaught = false;
+    try {
+        BYTE b;
+        unpack.readByte(&b);
+    } catch (const std::exception&) {
+        fCaught = true;
+    }
+    ASSERT_TRUE(fCaught);
+}

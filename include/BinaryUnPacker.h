@@ -55,7 +55,7 @@ protected:
     bool ensure(DWORD len)
     {
         if (mOffset + len > mLength) {
-            throw std::invalid_argument("not enough bytes");
+            throw std::out_of_range("not enough bytes");
         }
         return true;
     }
