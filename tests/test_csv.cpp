@@ -1,8 +1,6 @@
 
 #include <CppCommonConfig.h>
 
-#if HAS_BOOST
-
 #include <CSVReader.h>
 #include <gtest/gtest.h>
 
@@ -102,4 +100,3 @@ TEST(CSVReader, EmptyCells)
     ASSERT_EQ("d", row[1]);
     ASSERT_EQ("", row[2]);
 }
-#endif // HAS_BOOST

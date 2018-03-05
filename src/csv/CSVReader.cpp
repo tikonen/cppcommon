@@ -1,17 +1,15 @@
 
 #include <CppCommonConfig.h>
 
-#if HAS_BOOST
-
-#include <boost/regex.hpp>
+#include <regex>
 
 #include <CSVReader.h>
 
 // used to split the file in lines
-const boost::regex linesregx("\\r\\n|\\n\\r|\\n|\\r");
+const std::regex linesregx("\\r\\n|\\n\\r|\\n|\\r");
 
 // used to split each line to tokens, assuming ',' as column separator
-const boost::regex fieldsregx(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+const std::regex fieldsregx(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
 
 namespace CSV
 {
@@ -20,8 +18,8 @@ namespace CSV
         std::vector<Row> result;
 
         // iterator splits data to lines
-        boost::cregex_token_iterator li(data, data + length, linesregx, -1);
-        boost::cregex_token_iterator end;
+        std::cregex_token_iterator li(data, data + length, linesregx, -1);
+        std::cregex_token_iterator end;
 
         while (li != end) {
             std::string line = li->str();
@@ -31,8 +29,8 @@ namespace CSV
             }
 
             // Split line to tokens
-            boost::sregex_token_iterator ti(line.begin(), line.end(), fieldsregx, -1);
-            boost::sregex_token_iterator end2;
+            std::sregex_token_iterator ti(line.begin(), line.end(), fieldsregx, -1);
+            std::sregex_token_iterator end2;
 
             std::vector<std::string> row;
             while (ti != end2) {
@@ -49,5 +47,3 @@ namespace CSV
         return result;
     }
 }
-
-#endif
