@@ -10,7 +10,7 @@ namespace strutil
     void replace_all(std::string& str, const std::string& from, const std::string& to);
 
     // Convert to a string
-    inline std::string str(const std::string str) { return str; }
+    inline std::string str(const std::string&& str) { return str; }
 
     template <typename T> std::string str(const T& value)
     {
@@ -19,9 +19,20 @@ namespace strutil
         return os.str();
     }
 
+    inline std::string str_r(std::ostringstream& os) { return os.str(); }
+
+    template <typename T, typename... ARGS>
+    std::string str_r(std::ostringstream& os, const T& value, ARGS... args)
+    {
+        os << value;
+        return str_r(os, std::forward<ARGS>(args)...);
+    }
+
     template <typename T, typename... ARGS> std::string str(const T& value, ARGS... args)
     {
-        return str(value) + str(args...);
+        std::ostringstream os;
+        os << value;
+        return str_r(os, std::forward<ARGS>(args)...);
     }
 
     // String formatting
@@ -62,4 +73,4 @@ namespace strutil
     // Conversions between UTF-8 and UTF-16
     std::string to_utf8(const std::wstring& str);
     std::wstring to_utf16(const std::string& str);
-}
+} // namespace strutil

@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(common)
 
-if(CMAKE_VERSION VERSION_LESS 3.0.0)
-    message(FATAL_ERROR "You must use CMake 3.0.0 or greater.")
-endif()
-
 include(cmake/platform.cmake)
 
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
