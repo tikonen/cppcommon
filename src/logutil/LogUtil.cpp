@@ -32,9 +32,9 @@ LPCSTR GetErrorString(const DWORD error)
 
     // Call FormatMessage to get error string from winapi
     LPWSTR _buffer = nullptr;
-    DWORD size =
-    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                   nullptr, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&_buffer, 0, nullptr);
+    DWORD size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                nullptr, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                (LPWSTR)&_buffer, 0, nullptr);
 
     if (size > 0) {
         char* descbuffer = new char[size * 2];

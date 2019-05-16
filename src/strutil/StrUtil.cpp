@@ -19,4 +19,4 @@ namespace strutil
     std::string to_utf8(const std::wstring& str) { return utf8converter.to_bytes(str); }
 
     std::wstring to_utf16(const std::string& str) { return utf8converter.from_bytes(str); }
-}
+} // namespace strutil

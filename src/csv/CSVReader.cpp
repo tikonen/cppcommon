@@ -46,4 +46,4 @@ namespace CSV
         }
         return result;
     }
-}
+} // namespace CSV

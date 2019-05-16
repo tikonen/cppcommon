@@ -55,4 +55,4 @@ namespace _BinaryPackerInternal
             d->qwData = le ? htole64(qw) : htobe64(qw);
         }
     };
-}
+} // namespace _BinaryPackerInternal
