@@ -3,6 +3,7 @@ project(common)
 
 include(cmake/platform.cmake)
 
+set(CMAKE_CXX_STANDARD 11)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
 set(_src_root_path "${PROJECT_SOURCE_DIR}/src")
@@ -26,17 +27,13 @@ add_library(${_target} STATIC ${_source_list} ${_include_list})
 
 target_include_directories(${_target} PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/exports/)
 
-if(OSX)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-endif()
+#set(Boost_USE_STATIC_LIBS ON)
+#find_package(Boost COMPONENTS regex)
 
-set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS regex)
-
-if(Boost_FOUND)
-    target_include_directories(${_target} PUBLIC ${Boost_INCLUDE_DIR})
-    target_link_libraries(${_target} ${Boost_LIBRARIES})
-endif()
+#if(Boost_FOUND)
+#    target_include_directories(${_target} PUBLIC ${Boost_INCLUDE_DIR})
+#    target_link_libraries(${_target} ${Boost_LIBRARIES})
+#endif()
 
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)

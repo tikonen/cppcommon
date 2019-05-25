@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "_BinaryPackerInternal.h"
 
 #include <stdexcept>

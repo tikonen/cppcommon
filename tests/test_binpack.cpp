@@ -22,14 +22,14 @@ TEST(BinaryPacker, Packet)
     pack.addByte(1).skip(2).addByte(3);
 
     ASSERT_EQ(4, pack.GetLength());
-    BYTE data[128];
+    uint8_t data[128];
     size_t l = sizeof(data);
     pack.CopyTo(data, l);
-    BYTE p[] = { 0x1, 0x0, 0x0, 0x3 };
+    uint8_t p[] = { 0x1, 0x0, 0x0, 0x3 };
     ASSERT_FALSE(memcmp(data, p, l));
 
     BinaryUnPacker unpack(data, l);
-    BYTE b;
+    uint8_t b;
     unpack.readByte(&b);
     ASSERT_EQ(1, b);
     unpack.skip(2);
@@ -40,14 +40,14 @@ TEST(BinaryPacker, Packet)
 TEST(BinaryPacker, Array)
 {
     BinaryPacker pack;
-    pack.add((BYTE*)"kissa", 6);
+    pack.add((uint8_t*)"kissa", 6);
     ASSERT_EQ(6, pack.GetLength());
-    BYTE data[128];
+    uint8_t data[128];
     size_t l = sizeof(data);
     pack.CopyTo(data, l);
     ASSERT_STREQ("kissa", (char*)data);
 
-    BYTE str[6];
+    uint8_t str[6];
     BinaryUnPacker unpack(data, l);
     unpack.read(str, 6);
     ASSERT_STREQ("kissa", (char*)str);
@@ -60,23 +60,23 @@ TEST(BinaryPacker, WordEndianess)
         .add16bWord(0xABCD, BIG_ENDIAN)
         .add32bWord(0xCAFEBABE, LITTLE_ENDIAN)
         .add32bWord(0xCAFEBABE, BIG_ENDIAN);
-    ASSERT_EQ(sizeof(WORD) * 2 + sizeof(DWORD) * 2, pack.GetLength());
-    BYTE data[128];
-    BYTE* ptr = data;
+    ASSERT_EQ(sizeof(uint16_t) * 2 + sizeof(uint32_t) * 2, pack.GetLength());
+    uint8_t data[128];
+    uint8_t* ptr = data;
     size_t l = sizeof(data);
     pack.CopyTo(data, l);
 
-    ASSERT_EQ(0xABCD, *(WORD*)ptr);
-    ptr += sizeof(WORD);
-    ASSERT_EQ(0xCDAB, *(WORD*)ptr);
-    ptr += sizeof(WORD);
-    ASSERT_EQ(0xCAFEBABE, *(DWORD*)ptr);
-    ptr += sizeof(DWORD);
-    ASSERT_EQ(0xBEBAFECA, *(DWORD*)ptr);
+    ASSERT_EQ(0xABCD, *(uint16_t*)ptr);
+    ptr += sizeof(uint16_t);
+    ASSERT_EQ(0xCDAB, *(uint16_t*)ptr);
+    ptr += sizeof(uint16_t);
+    ASSERT_EQ(0xCAFEBABE, *(uint32_t*)ptr);
+    ptr += sizeof(uint32_t);
+    ASSERT_EQ(0xBEBAFECA, *(uint32_t*)ptr);
 
     BinaryUnPacker unpack(data, l);
-    WORD w1, w2;
-    DWORD dw1, dw2;
+    uint16_t w1, w2;
+    uint32_t dw1, dw2;
     unpack.read16bWord(&w1, LITTLE_ENDIAN)
         .read16bWord(&w2, BIG_ENDIAN)
         .read32bWord(&dw1, LITTLE_ENDIAN)
@@ -91,9 +91,9 @@ TEST(BinaryPacker, WordEndianess)
 TEST(BinaryPacker, Invalid)
 {
     BinaryUnPacker unpack(NULL, 0);
-    BOOL fCaught = false;
+    bool fCaught = false;
     try {
-        BYTE b;
+        uint8_t b;
         unpack.readByte(&b);
     } catch (const std::exception&) {
         fCaught = true;
